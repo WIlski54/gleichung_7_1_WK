@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Gleichungen lösen mit dem Waagenmodell (Klasse 7)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Modernes Redesign V2 */
+        :root {
+            --background: #f9fafb;
+            --surface: #ffffff;
+            --primary: #007aff;
+            --primary-light: #e5f2ff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --shadow-color-light: rgba(56, 102, 203, 0.08);
+            --shadow-color-dark: rgba(56, 102, 203, 0.15);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        body {
+            font-family: 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--background);
+            color: var(--text-primary);
+            margin: 0;
+            line-height: 1.65;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 50px auto;
+            padding: 0 20px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.8em;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin: 40px 0 24px 0;
+        }
+
+        h2 {
+            font-size: 2.2em;
+            margin-top: 60px;
+            margin-bottom: 24px;
+            font-weight: 700;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .intro-card, .task-card, .beispiel-schritt {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px var(--shadow-color-light);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .task-card:hover, .beispiel-schritt:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px var(--shadow-color-dark);
+        }
+        
+        .intro-card {
+            font-size: 1.1em;
+            color: var(--text-secondary);
+        }
+        .intro-card b {
+             color: var(--text-primary);
+             font-weight: 600;
+        }
+        .intro-card ul {
+            margin-top: 18px;
+            padding-left: 20px;
+        }
+        .intro-card li::marker {
+            color: var(--primary);
+        }
+
+        .beispiel-schritt img {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 16px;
+        }
+        .beispiel-schritt .caption {
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        
+        .task-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .equation-input {
+            flex: 1;
+            font-family: 'Sora', sans-serif;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: #f3f4f6;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 14px 18px;
+            transition: all 0.2s ease;
+        }
+        .equation-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: var(--surface);
+            box-shadow: 0 0 0 4px var(--primary-light);
+        }
+
+        .waagemodell-btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+            font-size: 1em;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+            transition: all 0.2s ease;
+        }
+        .waagemodell-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+        }
+         .waagemodell-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(0, 123, 255, 0.2);
+        }
+
+        .waage-interaktiv {
+            background: var(--background);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            margin: 30px auto 0 auto;
+            padding: 24px;
+            max-width: 98%;
+        }
+
+        .waage-palette { text-align: center; margin-bottom: 24px; }
+
+        .waage-btn {
+            margin: 0 8px;
+            width: 55px;
+            height: 55px;
+            font-size: 1.8em;
+            font-weight: 700;
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            cursor: pointer;
+            background: var(--surface);
+            transition: all .2s ease;
+        }
+        .waage-btn.kugel { border-radius: 50%; color: #3b82f6; }
+        .waage-btn.box { color: #ef4444; }
+        .waage-btn:hover {
+            transform: scale(1.1);
+            border-color: var(--primary);
+        }
+        .waage-btn.selected {
+            border-color: var(--primary) !important;
+            background-color: var(--primary-light);
+            box-shadow: 0 0 0 4px var(--primary-light);
+            transform: scale(1.15);
+        }
+
+        .waage-reset {
+            margin-left: 20px;
+            padding: 10px 22px;
+            border-radius: 12px;
+            border: none;
+            background: #ef4444;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .waage-reset:hover { background: #dc2626; transform: translateY(-2px); }
+        
+        .waage-feedback, .baukasten-feedback, .translator-feedback {
+            font-size: 1.2em;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 600;
+            padding: 8px;
+            border-radius: 10px;
+        }
+        .waage-feedback.ok, .baukasten-feedback.ok, .translator-feedback.ok { color: #166534; background-color: #dcfce7; }
+        .waage-feedback.no, .baukasten-feedback.no, .translator-feedback.no { color: #991b1b; background-color: #fee2e2; }
+
+        /* Baukasten Styles */
+        .baukasten-info { text-align: center; padding: 12px; background: var(--primary-light); border-radius: 12px; margin-bottom: 24px; font-weight: 600; }
+        .baustein-palette { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; padding: 16px; background-color: #f3f4f6; border-radius: 16px; margin-bottom: 24px; }
+        .baustein { padding: 10px 20px; border-radius: 10px; background-color: var(--surface); border: 2px solid var(--border-color); cursor: pointer; font-weight: 600; transition: all 0.2s ease; }
+        .baustein:hover { transform: scale(1.05); }
+        .baustein.selected { border-color: var(--primary); background-color: var(--primary-light); transform: scale(1.1); box-shadow: 0 4px 10px var(--shadow-color-light); }
+        .baukasten-seiten { display: flex; gap: 20px; justify-content: center; align-items: flex-start; }
+        .seite { flex: 1; min-height: 160px; background-color: var(--surface); border: 2px dashed var(--border-color); border-radius: 16px; padding: 12px; transition: all 0.2s ease; cursor: pointer; }
+        .seite:hover { border-color: var(--primary); background-color: #f7faff; }
+        .seite .baustein { cursor: pointer; margin: 6px; display: inline-block; }
+        .wert-anzeige { font-weight: 700; font-size: 1.2em; text-align: center; margin-top: 10px; color: var(--text-secondary); }
+
+        /* Textaufgaben-Übersetzer Styles */
+        .story-problem {
+            font-size: 1.2em;
+            color: var(--text-secondary);
+            background-color: var(--background);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+        }
+        .equation-assembly-area, .equation-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap; 
+            min-height: 80px;
+            background-color: #f3f4f6;
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 24px;
+        }
+        .equation-assembly-area .baustein, .equation-display .baustein {
+            font-size: 1.5em;
+            margin: 0 5px;
+        }
+        .equation-display {
+             background-color: var(--primary-light);
+        }
+        .translator-palette {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 16px;
+            background-color: var(--background);
+            border-radius: 16px;
+            margin-bottom: 24px;
+        }
+        .translator-controls {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+
+        @media (max-width: 650px) {
+            h1 { font-size: 2.2em; }
+            h2 { font-size: 1.8em; }
+            .intro-card, .task-card, .beispiel-schritt { padding: 24px; }
+            .input-row { flex-direction: column; align-items: stretch; gap: 12px; }
+            .baukasten-seiten { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h1>Gleichungen lösen mit dem Waagenmodell</h1>
+
+    <div class="intro-card">
+        <b>Was ist eine Gleichung?</b><br>
+        Eine Gleichung ist wie eine Waage: Links und rechts steht jeweils ein Wert – und die Waage ist im Gleichgewicht. Unser Ziel ist, das „Gewicht“ der geheimnisvollen Box (das <b>X</b>) herauszufinden.
+        <ul style="margin-top:18px;">
+            <li>Alles, was wir <b>links</b> machen, müssen wir auch <b>rechts</b> machen – nur dann bleibt die Waage im Gleichgewicht.</li>
+            <li><b>Kugeln</b> stehen für „1“ (bekannter Wert), <b>Boxen</b> für „X“ (unbekanntes Gewicht).</li>
+        </ul>
+        <p style="margin-top:18px;">Mit dem Waagenmodell kannst du Gleichungen anschaulich lösen. Probiere es gleich beim Beispiel und bei den Aufgaben unten!</p>
+    </div>
+
+  <div class="beispiel-section">
+    <h2>Beispiel: Löse \(2x + 4 = 10\)</h2>
+    <div class="beispiel-schritt">
+        <img src="1.png" alt="Waage mit 2 Boxen und 4 Kugeln links, 10 Kugeln rechts">
+        <div class="caption">
+            <b>Schritt 1:</b> Stelle die Gleichung auf der Waage dar.<br>
+            Links: 2 Boxen & 4 Kugeln. Rechts: 10 Kugeln.
+        </div>
+    </div>
+    <div class="beispiel-schritt">
+        <img src="2.png" alt="Waage nach Abziehen von 4 Kugeln auf beiden Seiten: 2 Boxen links, 6 Kugeln rechts">
+        <div class="caption">
+            <b>Schritt 2:</b> Ziehe 4 Kugeln auf beiden Seiten ab. Neue Gleichung: \(2x = 6\)
+        </div>
+    </div>
+    <div class="beispiel-schritt">
+        <img src="3.png" alt="Waage nach Teilen durch 2: 1 Box links, 3 Kugeln rechts">
+        <div class="caption">
+            <b>Schritt 3:</b> Teile durch 2: Eine Box = 3 Kugeln. Also <b>x = 3</b>.
+        </div>
+    </div>
+</div>
+
+    <div class="tasks-list">
+        <h2>Jetzt du!</h2>
+        <div class="task-card">
+            <div class="task-title"><span class="emoji">1.</span> Aufgabe: Löse \( x + 4 = 10 \)</div>
+            <div class="input-row">
+                <input type="text" class="equation-input" id="eq1" placeholder="x = ?">
+                <button class="waagemodell-btn" onclick="showWaage('a')">Waagenmodell nutzen</button>
+            </div>
+            <div id="waage-a"></div>
+        </div>
+        <div class="task-card">
+            <div class="task-title"><span class="emoji">2.</span> Aufgabe: Löse \( 2x = 8 \)</div>
+            <div class="input-row">
+                <input type="text" class="equation-input" id="eq2" placeholder="x = ?">
+                <button class="waagemodell-btn" onclick="showWaage('b')">Waagenmodell nutzen</button>
+            </div>
+            <div id="waage-b"></div>
+        </div>
+        <div class="task-card">
+            <div class="task-title"><span class="emoji">3.</span> Aufgabe: Löse \( 2x + 3 = 9 \)</div>
+            <div class="input-row">
+                <input type="text" class="equation-input" id="eq3" placeholder="x = ?">
+                <button class="waagemodell-btn" onclick="showWaage('c')">Waagenmodell nutzen</button>
+            </div>
+            <div id="waage-c"></div>
+        </div>
+        <div class="task-card">
+            <div class="task-title">4. Gleichungs-Baukasten 🏗️</div>
+            <p>Baue deine eigene Gleichung! Tippe zuerst einen Baustein aus der Palette an und tippe danach auf die linke oder rechte Seite, um ihn hinzuzufügen.</p>
+            <div class="baukasten-info" id="baukasten-info"></div>
+            <div class="baustein-palette" id="baukasten-palette"></div>
+            <div class="baukasten-seiten">
+                <div class="seiten-container">
+                    <div class="seite" id="seite-links"></div>
+                    <div class="wert-anzeige" id="wert-links">Wert Links: 0</div>
+                </div>
+                <div style="font-size: 3em; align-self: center;">=</div>
+                <div class="seiten-container">
+                    <div class="seite" id="seite-rechts"></div>
+                    <div class="wert-anzeige" id="wert-rechts">Wert Rechts: 0</div>
+                </div>
+            </div>
+            <div class="baukasten-feedback no" id="baukasten-feedback"></div>
+            <button class="waagemodell-btn" id="baukasten-reset" style="margin-top: 20px;">Aktuelle Aufgabe zurücksetzen</button>
+        </div>
+
+        <div class="task-card" id="task-5">
+            <div class="task-title">5. Der Textaufgaben-Übersetzer 📝➡️⚖️</div>
+            
+            <div id="translator-step-1">
+                <p>Übersetze die folgende Geschichte in die Sprache der Mathematik. Baue die passende Gleichung, indem du die Bausteine antippst.</p>
+                <div class="story-problem" id="story-problem-text"></div>
+                <div class="equation-assembly-area" id="equation-assembly-area"></div>
+                <div class="translator-palette" id="translator-palette"></div>
+                <div class="translator-controls">
+                    <button class="waagemodell-btn" id="translator-check-btn">Prüfen</button>
+                    <button class="waage-reset" id="translator-clear-btn">Letzten Schritt löschen</button>
+                </div>
+                <div class="translator-feedback" id="translator-feedback"></div>
+            </div>
+    
+            <div id="translator-step-2" style="display: none;">
+                <p style="font-weight: 600; font-size: 1.2em;">Klasse! Die Gleichung stimmt. Löse sie jetzt:</p>
+                <div class="equation-display" id="translator-solved-equation-display"></div>
+                <div class="input-row">
+                    <input type="text" class="equation-input" id="translator-solution-input" placeholder="x = ?">
+                    <button class="waagemodell-btn" id="translator-solve-btn">Lösung prüfen</button>
+                </div>
+                <div class="translator-feedback" id="translator-solution-feedback"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+// JavaScript für Aufgaben 1-3
+const xVorgaben = { a:6, b:4, c:3 };
+function showWaage(letter) {
+    let xWert = xVorgaben[letter];
+    let targetDiv = document.getElementById("waage-"+letter);
+    targetDiv.innerHTML = '';
+    let container = document.createElement('div');
+    container.className = "waage-interaktiv";
+    container.innerHTML = `<div class="waage-palette"><button class="waage-btn box" id="btn-box-${letter}">X</button><button class="waage-btn kugel" id="btn-kugel-${letter}">1</button><button class="waage-reset" id="btn-reset-${letter}">Zurücksetzen</button></div><div style="display:flex; justify-content:center;"><svg id="waage-svg-${letter}" width="715" height="407" viewBox="0 0 770 440"><g id="waagegroup"></g><ellipse cx="385" cy="364" rx="88" ry="27" fill="#88aac2"/><ellipse cx="385" cy="358" rx="82" ry="24" fill="#5490ca"/><ellipse cx="385" cy="354" rx="76" ry="22" fill="#6ba3d9"/><rect x="367" y="154" width="36" height="198" rx="17" fill="#b3c6e3"/><circle cx="385" cy="132" r="28" fill="#b3c6e3"/><circle cx="385" cy="132" r="13.2" fill="#4680c2"/><circle cx="385" cy="132" r="7" fill="#2d5a8e"/></svg></div><div class="waage-feedback" id="waage-feedback-${letter}"></div>`;
+    targetDiv.appendChild(container);
+    let kugelnLinks = [], kugelnRechts = [], boxenLinks = [], boxenRechts = [];
+    let objectToPlace = null;
+    let btnBox = document.getElementById(`btn-box-${letter}`);
+    let btnKugel = document.getElementById(`btn-kugel-${letter}`);
+    let btnReset = document.getElementById(`btn-reset-${letter}`);
+    btnBox.onclick = ()=>{ objectToPlace='box'; btnBox.classList.add('selected'); btnKugel.classList.remove('selected'); }
+    btnKugel.onclick = ()=>{ objectToPlace='kugel'; btnKugel.classList.add('selected'); btnBox.classList.remove('selected'); }
+    btnReset.onclick = ()=>{
+        [...kugelnLinks,...kugelnRechts,...boxenLinks,...boxenRechts].forEach(el=>el.g && el.g.remove());
+        kugelnLinks=[]; kugelnRechts=[]; boxenLinks=[]; boxenRechts=[]; updateBalance();
+        btnBox.classList.remove('selected'); btnKugel.classList.remove('selected'); objectToPlace=null;
+    }
+    let svg = document.getElementById(`waage-svg-${letter}`);
+    let waagegroup = svg.getElementById ? svg.getElementById('waagegroup') : svg.querySelector('[id="waagegroup"]');
+    const baseLeftX = 220, baseRightX = 550, schaleY = 282, balkenY = 122, stangeX = 385;
+    function renderWaageObjekte(angle=0) {
+        waagegroup.innerHTML='';
+        let balken = document.createElementNS("http://www.w3.org/2000/svg","rect");
+        balken.setAttribute("x","154"); balken.setAttribute("y",balkenY-11);
+        balken.setAttribute("width","462"); balken.setAttribute("height","22");
+        balken.setAttribute("rx","10"); balken.setAttribute("fill","#4a90d9");
+        waagegroup.appendChild(balken);
+        let aufhL = document.createElementNS("http://www.w3.org/2000/svg","line");
+        aufhL.setAttribute("x1",baseLeftX); aufhL.setAttribute("y1",balkenY+1);
+        aufhL.setAttribute("x2",baseLeftX); aufhL.setAttribute("y2",schaleY-15);
+        aufhL.setAttribute("stroke","#688aad"); aufhL.setAttribute("stroke-width","5");
+        waagegroup.appendChild(aufhL);
+        let aufhR = document.createElementNS("http://www.w3.org/2000/svg","line");
+        aufhR.setAttribute("x1",baseRightX); aufhR.setAttribute("y1",balkenY+1);
+        aufhR.setAttribute("x2",baseRightX); aufhR.setAttribute("y2",schaleY-15);
+        aufhR.setAttribute("stroke","#688aad"); aufhR.setAttribute("stroke-width","5");
+        waagegroup.appendChild(aufhR);
+        let gLinks = document.createElementNS("http://www.w3.org/2000/svg","g");
+        let schaleLinks = document.createElementNS("http://www.w3.org/2000/svg","ellipse");
+        schaleLinks.setAttribute("cx",baseLeftX); schaleLinks.setAttribute("cy",schaleY);
+        schaleLinks.setAttribute("rx","91"); schaleLinks.setAttribute("ry","18");
+        schaleLinks.setAttribute("fill","#f3f6fa"); schaleLinks.setAttribute("stroke","#88aac2"); schaleLinks.setAttribute("stroke-width","3.5");
+        gLinks.appendChild(schaleLinks);
+        gLinks.setAttribute("style","cursor:pointer");
+        gLinks.addEventListener('click', e=>{ if(objectToPlace) addObject('links',objectToPlace); });
+        let objsL = [...kugelnLinks, ...boxenLinks];
+        objsL.forEach((obj,idx)=>{
+            let offsetX=(idx%4)*40-60,row=Math.floor(idx/4),cy=schaleY-5-row*37,cx=baseLeftX+offsetX;
+            if(obj.type==='kugel'){
+                let circ=document.createElementNS("http://www.w3.org/2000/svg","circle");
+                circ.setAttribute("r","20"); circ.setAttribute("fill","#7ac5f8");
+                circ.setAttribute("stroke","#4a90d9"); circ.setAttribute("stroke-width","2.5");
+                circ.setAttribute("cx",cx); circ.setAttribute("cy",cy);
+                let txt=document.createElementNS("http://www.w3.org/2000/svg","text");
+                txt.setAttribute("x",cx); txt.setAttribute("y",cy+8);
+                txt.setAttribute("font-size","22"); txt.setAttribute("font-weight","bold");
+                txt.setAttribute("text-anchor","middle"); txt.setAttribute("fill","#2d5a8e");
+                txt.textContent="1";
+                gLinks.appendChild(circ); gLinks.appendChild(txt);
+                circ.addEventListener('click', function(ev){ ev.stopPropagation(); removeObject(obj,'links','kugel'); });
+                txt.addEventListener('click', function(ev){ ev.stopPropagation(); removeObject(obj,'links','kugel'); });
+                obj.g=circ;
+            }else{
+                let box=document.createElementNS("http://www.w3.org/2000/svg","rect");
+                box.setAttribute("width","36"); box.setAttribute("height","36");
+                box.setAttribute("fill","#ffd4d4"); box.setAttribute("stroke","#e55");
+                box.setAttribute("stroke-width","3.2"); box.setAttribute("rx","8");
+                box.setAttribute("x",cx-18); box.setAttribute("y",cy-18);
+                let txt=document.createElementNS("http://www.w3.org/2000/svg","text");
+                txt.setAttribute("x",cx); txt.setAttribute("y",cy+11);
+                txt.setAttribute("font-size","26"); txt.setAttribute("font-weight","bold");
+                txt.setAttribute("text-anchor","middle"); txt.setAttribute("fill","#d44");
+                txt.textContent="X";
+                gLinks.appendChild(box); gLinks.appendChild(txt);
+                box.addEventListener('click', function(ev){ ev.stopPropagation(); removeObject(obj,'links','box'); });
+                txt.addEventListener('click', function(ev){ ev.stopPropagation(); removeObject(obj,'links','box'); });
+                obj.g=box;
+            }
+        });
+        waagegroup.appendChild(gLinks);
+        let gRechts = document.createElementNS("http://www.w3.org/2000/svg","g");
+        let schaleRechts = document.createElementNS("http://www.w3.org/2000/svg","ellipse");
+        schaleRechts.setAttribute("cx",baseRightX); schaleRechts.setAttribute("cy",schaleY);
+        schaleRechts.setAttribute("rx","91"); schaleRechts.setAttribute("ry","18");
+        schaleRechts.setAttribute("fill","#f3f6fa"); schaleRechts.setAttribute("stroke","#88aac2"); schaleRechts.setAttribute("stroke-width","3.5");
+        gRechts.appendChild(schaleRechts);
+        gRechts.setAttribute("style","cursor:pointer");
+        gRechts.addEventListener('click', e=>{ if(objectToPlace) addObject('rechts',objectToPlace); });
+        let objsR = [...kugelnRechts, ...boxenRechts];
+        objsR.forEach((obj,idx)=>{
+            let offsetX=(idx%4)*40-60,row=Math.floor(idx/4),cy=schaleY-5-row*37,cx=baseRightX+offsetX;
+            if(obj.type==='kugel'){
+                let circ=document.createElementNS("http://www.w3.org/2000/svg","circle");
+                circ.setAttribute("r","20");
+                circ.setAttribute("fill","#7ac5f8");
+                circ.setAttribute("stroke","#4a90d9"); circ.setAttribute("stroke-width","2.5");
+                circ.setAttribute("cx",cx); circ.setAttribute("cy",cy);
+                let txt=document.createElementNS("http://www.w3.org/2000/svg","text");
+                txt.setAttribute("x",cx); txt.setAttribute("y",cy+8);
+                txt.setAttribute("font-size","22"); txt.setAttribute("font-weight","bold");
+                txt.setAttribute("text-anchor","middle"); txt.setAttribute("fill","#2d5a8e");
+                txt.textContent="1";
+                gRechts.appendChild(circ); gRechts.appendChild(txt);
+                circ.addEventListener('click', function(ev){ ev.stopPropagation(); removeObject(obj,'rechts','kugel'); });
+                txt.addEventListener('click', function(ev){ ev.stopPropagation(); removeObject(obj,'rechts','kugel'); });
+                obj.g=circ;
+            }else{
+                let box=document.createElementNS("http://www.w3.org/2000/svg","rect");
+                box.setAttribute("width","36"); box.setAttribute("height","36");
+                box.setAttribute("fill","#ffd4d4"); box.setAttribute("stroke","#e55");
+                box.setAttribute("stroke-width","3.2"); box.setAttribute("rx","8");
+                box.setAttribute("x",cx-18); box.setAttribute("y",cy-18);
+                let txt=document.createElementNS("http://www.w3.org/2000/svg","text");
+                txt.setAttribute("x",cx); txt.setAttribute("y",cy+11);
+                txt.setAttribute("font-size","26"); txt.setAttribute("font-weight","bold");
+                txt.setAttribute("text-anchor","middle"); txt.setAttribute("fill","#d44");
+                txt.textContent="X";
+                gRechts.appendChild(box); gRechts.appendChild(txt);
+                box.addEventListener('click', function(ev){ ev.stopPropagation(); removeObject(obj,'rechts','box'); });
+                txt.addEventListener('click', function(ev){ ev.stopPropagation(); removeObject(obj,'links','box'); });
+                obj.g=box;
+            }
+        });
+        waagegroup.appendChild(gRechts);
+        waagegroup.setAttribute("transform",`rotate(${angle},${stangeX},${balkenY})`);
+    }
+
+    function addObject(side,type) {
+        let obj = {type:type};
+        if(side==='links'){ if(type==='kugel') kugelnLinks.push(obj); else boxenLinks.push(obj);}
+        else{ if(type==='kugel') kugelnRechts.push(obj); else boxenRechts.push(obj);}
+        updateBalance();
+    }
+    function removeObject(obj,side,type){
+        if(side==='links'){ if(type==='kugel') kugelnLinks=kugelnLinks.filter(e=>e!==obj); else boxenLinks=boxenLinks.filter(e=>e!==obj);}
+        else{ if(type==='kugel') kugelnRechts=kugelnRechts.filter(e=>e!==obj); else boxenRechts=boxenRechts.filter(e=>e!==obj);}
+        updateBalance();
+    }
+    function updateBalance(){
+        let sumL=kugelnLinks.length*1+boxenLinks.length*xWert;
+        let sumR=kugelnRechts.length*1+boxenRechts.length*xWert;
+        let diff=sumR-sumL;
+        let angle=Math.max(-15,Math.min(15,diff*3));
+        renderWaageObjekte(angle);
+        let feedback=document.getElementById(`waage-feedback-${letter}`);
+        if(sumL===0&&sumR===0){ feedback.textContent=''; return;}
+        if(sumL===sumR&&sumL!==0){
+            feedback.textContent=`✅ Perfekt, im Gleichgewicht!`;
+            feedback.className="waage-feedback ok";
+        }else{
+            feedback.textContent=`❌ Nicht im Gleichgewicht`;
+            feedback.className="waage-feedback no";
+        }
+    }
+    updateBalance();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Hilfsfunktion zum Mischen von Arrays (Fisher-Yates Shuffle)
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // --- Logik für Aufgabe 4: Baukasten ---
+    const baukastenContainer = document.getElementById('baukasten-info');
+    if (baukastenContainer) {
+        const baukastenBlockDefs = [
+            { term: 'x', text: 'x' }, { term: '2x', text: '2x' },
+            { term: '3x', text: '3x' }, { term: '1', text: '+1' },
+            { term: '5', text: '+5' }, { term: '-2', text: '-2' },
+            { term: '-10', text: '-10' }
+        ];
+        const baukastenTasks = [ { x: 4, solved: false }, { x: 7, solved: false }, { x: -2, solved: false } ];
+        let currentBaukastenTaskIndex = 0;
+        let isBaukastenTransitioning = false;
+        const infoBox = document.getElementById('baukasten-info');
+        const baukastenFeedbackEl = document.getElementById('baukasten-feedback');
+        const seiteLinks = document.getElementById('seite-links');
+        const seiteRechts = document.getElementById('seite-rechts');
+        const baukastenPalette = document.getElementById('baukasten-palette');
+        const baukastenResetButton = document.getElementById('baukasten-reset');
+        let selectedBaustein = null;
+        
+        function setupBaukastenPalette() {
+            baukastenPalette.innerHTML = '';
+            const shuffledBlocks = shuffleArray([...baukastenBlockDefs]);
+            shuffledBlocks.forEach(def => {
+                const baustein = document.createElement('div');
+                baustein.className = 'baustein';
+                baustein.dataset.term = def.term;
+                baustein.textContent = def.text;
+                baustein.addEventListener('click', () => {
+                    document.querySelectorAll('#baukasten-palette .baustein').forEach(b => b.classList.remove('selected'));
+                    baustein.classList.add('selected');
+                    selectedBaustein = baustein;
+                });
+                baukastenPalette.appendChild(baustein);
+            });
+        }
+
+        [seiteLinks, seiteRechts].forEach(seite => {
+            seite.addEventListener('click', () => {
+                if (selectedBaustein) {
+                    const newBaustein = selectedBaustein.cloneNode(true);
+                    newBaustein.classList.remove('selected');
+                    newBaustein.addEventListener('click', () => { newBaustein.remove(); updateBaukasten(); });
+                    seite.appendChild(newBaustein);
+                    updateBaukasten();
+                }
+            });
+        });
+        
+        baukastenResetButton.addEventListener('click', () => { if (!isBaukastenTransitioning) initBaukasten(); });
+        function initBaukasten() {
+            isBaukastenTransitioning = false;
+            const currentTask = baukastenTasks[currentBaukastenTaskIndex];
+            infoBox.innerHTML = `Für diese Übung gilt: <b>x = ${currentTask.x}</b>`;
+            seiteLinks.innerHTML = ''; seiteRechts.innerHTML = '';
+            setupBaukastenPalette();
+            selectedBaustein = null;
+            updateBaukasten();
+        }
+        function updateBaukasten() {
+            if (isBaukastenTransitioning) return;
+            const wertLinks = calculateBaukastenWert(seiteLinks); const wertRechts = calculateBaukastenWert(seiteRechts);
+            document.getElementById('wert-links').textContent = `Wert Links: ${wertLinks}`; document.getElementById('wert-rechts').textContent = `Wert Rechts: ${wertRechts}`;
+            if (wertLinks === wertRechts && (wertLinks !== 0 || wertRechts !== 0)) {
+                baukastenFeedbackEl.textContent = '✅ Super, im Gleichgewicht!'; baukastenFeedbackEl.className = 'baukasten-feedback ok';
+                if (!baukastenTasks[currentBaukastenTaskIndex].solved) {
+                    baukastenTasks[currentBaukastenTaskIndex].solved = true; isBaukastenTransitioning = true;
+                    setTimeout(() => {
+                        currentBaukastenTaskIndex++;
+                        if (currentBaukastenTaskIndex < baukastenTasks.length) {
+                            baukastenFeedbackEl.textContent = 'Nächste Aufgabe wird geladen...'; setTimeout(initBaukasten, 1500);
+                        } else {
+                            baukastenFeedbackEl.textContent = '🎉 Toll, alle Aufgaben geschafft!'; infoBox.innerHTML = '<b>Du bist ein Gleichungs-Profi!</b>';
+                        }
+                    }, 1000);
+                }
+            } else { baukastenFeedbackEl.textContent = '❌ Nicht im Gleichgewicht'; baukastenFeedbackEl.className = 'baukasten-feedback no'; }
+        }
+        function calculateBaukastenWert(seite) {
+            let total = 0; if (currentBaukastenTaskIndex >= baukastenTasks.length) return 0;
+            const currentX = baukastenTasks[currentBaukastenTaskIndex].x;
+            const items = seite.querySelectorAll('.baustein');
+            items.forEach(item => {
+                const term = item.dataset.term;
+                if (term.includes('x')) { const multiplier = parseInt(term.replace('x', '')) || 1; total += multiplier * currentX; } 
+                else { total += parseInt(term); }
+            });
+            return total;
+        }
+        initBaukasten();
+    }
+
+
+    // --- Logik für Aufgabe 5: Textaufgaben-Übersetzer ---
+    const translatorContainer = document.getElementById('task-5');
+    if(translatorContainer) {
+        const storyTasks = [
+            { text: "Max hat eine Schachtel mit x Stiften. Seine Freundin Lea gibt ihm 5 Stifte dazu. Jetzt hat er insgesamt 12 Stifte. Wie viele Stifte waren am Anfang in der Schachtel?", blocks: ['x', '+', '5', '=', '12'], solution: 7 },
+            { text: "Anna hat x Euro gespart. Sie kauft ein Buch für 8 Euro und hat danach noch 15 Euro übrig. Wie viel Geld hatte sie vorher?", blocks: ['x', '-', '8', '=', '15'], solution: 23 },
+            { text: "Ein Rechteck hat einen Umfang von 30 cm. Eine Seite ist 9 cm lang. Die andere Seite hat die Länge x. Stelle die Gleichung für den Umfang auf.", blocks: ['2', '*', 'x', '+', '2', '*', '9', '=', '30'], solution: 6 },
+            { text: "Ein Bäcker hat 48 Brötchen. Er verkauft x Tüten mit jeweils 6 Brötchen. Am Ende hat er noch 12 Brötchen übrig. Wie viele Tüten hat er verkauft?", blocks: ['48', '-', '6', '*', 'x', '=', '12'], solution: 6 },
+            { text: "Tom hat x Bonbons. Seine Schwester Lisa hat dreimal so viele. Wenn Lisa Tom 10 Bonbons abgibt, haben beide gleich viele. Wie viele Bonbons hatte Tom am Anfang?", blocks: ['x', '+', '10', '=', '3', '*', 'x', '-', '10'], solution: 10 }
+        ];
+        let currentStoryTaskIndex = 0;
+        let isTranslatorTransitioning = false;
+        const storyProblemText = document.getElementById('story-problem-text');
+        const assemblyArea = document.getElementById('equation-assembly-area');
+        const solvedEquationDisplay = document.getElementById('translator-solved-equation-display');
+        const translatorPalette = document.getElementById('translator-palette');
+        const checkBtn = document.getElementById('translator-check-btn');
+        const clearBtn = document.getElementById('translator-clear-btn');
+        const feedbackEl = document.getElementById('translator-feedback');
+        const step1 = document.getElementById('translator-step-1');
+        const step2 = document.getElementById('translator-step-2');
+        const solutionInput = document.getElementById('translator-solution-input');
+        const solveBtn = document.getElementById('translator-solve-btn');
+        const solutionFeedbackEl = document.getElementById('translator-solution-feedback');
+
+        function initTranslatorTask() {
+            isTranslatorTransitioning = false;
+            const task = storyTasks[currentStoryTaskIndex];
+            storyProblemText.textContent = `(${currentStoryTaskIndex + 1}/${storyTasks.length}) ${task.text}`;
+            assemblyArea.innerHTML = '';
+            translatorPalette.innerHTML = '';
+            feedbackEl.innerHTML = '';
+            solutionFeedbackEl.innerHTML = '';
+            solutionInput.value = '';
+            solvedEquationDisplay.innerHTML = '';
+            step1.style.display = 'block';
+            step2.style.display = 'none';
+            checkBtn.disabled = false;
+            clearBtn.disabled = false;
+
+            const shuffledBlocks = shuffleArray([...task.blocks]);
+            shuffledBlocks.forEach(blockText => {
+                const block = document.createElement('div');
+                block.className = 'baustein';
+                block.textContent = blockText;
+                block.addEventListener('click', () => {
+                    const newBlock = block.cloneNode(true);
+                    assemblyArea.appendChild(newBlock);
+                });
+                translatorPalette.appendChild(block);
+            });
+        }
+
+        clearBtn.addEventListener('click', () => { if (assemblyArea.lastChild) { assemblyArea.removeChild(assemblyArea.lastChild); } });
+        
+        // ROBUSTERE FUNKTION ZUR ERSTELLUNG EINER KANONISCHEN (SORTIERTEN) FORM
+        function getCanonicalSide(blocks) {
+            let terms = [];
+            let currentTerm = '';
+
+            for (const block of blocks) {
+                const content = block.textContent;
+                // Wenn ein + oder - auftaucht, wird der bisherige Term abgeschlossen
+                // und ein neuer, mit dem Operator beginnender, Term gestartet.
+                if ((content === '+' || content === '-') && currentTerm !== '') {
+                    terms.push(currentTerm);
+                    currentTerm = content;
+                } else {
+                    currentTerm += content;
+                }
+            }
+            if (currentTerm !== '') {
+                terms.push(currentTerm);
+            }
+            
+            // Sortiert die erkannten Terme alphabetisch für einen eindeutigen Vergleich
+            return terms.sort().join('');
+        }
+
+        checkBtn.addEventListener('click', () => {
+            const assembledBlocks = Array.from(assemblyArea.childNodes);
+            const correctBlocks = storyTasks[currentStoryTaskIndex].blocks.map(t => ({ textContent: t }));
+
+            const eqIndexAssembled = assembledBlocks.findIndex(b => b.textContent === '=');
+            const eqIndexCorrect = correctBlocks.findIndex(b => b.textContent === '=');
+
+            if (eqIndexAssembled === -1) {
+                feedbackEl.textContent = '❌ Deine Gleichung braucht ein Gleichheitszeichen!';
+                feedbackEl.className = 'translator-feedback no';
+                return;
+            }
+
+            const assembledLeft = assembledBlocks.slice(0, eqIndexAssembled);
+            const assembledRight = assembledBlocks.slice(eqIndexAssembled + 1);
+            const correctLeft = correctBlocks.slice(0, eqIndexCorrect);
+            const correctRight = correctBlocks.slice(eqIndexCorrect + 1);
+            
+            const canonAssembledLeft = getCanonicalSide(assembledLeft);
+            const canonAssembledRight = getCanonicalSide(assembledRight);
+            const canonCorrectLeft = getCanonicalSide(correctLeft);
+            const canonCorrectRight = getCanonicalSide(correctRight);
+            
+            const isCorrect = (canonAssembledLeft === canonCorrectLeft && canonAssembledRight === canonCorrectRight) ||
+                              (canonAssembledLeft === canonCorrectRight && canonAssembledRight === canonCorrectLeft);
+
+            if (isCorrect) {
+                feedbackEl.textContent = '✅ Richtig! Das ist die passende Gleichung.';
+                feedbackEl.className = 'translator-feedback ok';
+                checkBtn.disabled = true;
+                clearBtn.disabled = true;
+                solvedEquationDisplay.innerHTML = assemblyArea.innerHTML;
+                setTimeout(() => {
+                    step1.style.display = 'none';
+                    step2.style.display = 'block';
+                    solutionInput.focus();
+                }, 1500);
+            } else {
+                feedbackEl.textContent = '❌ Das stimmt noch nicht ganz. Versuche es erneut!';
+                feedbackEl.className = 'translator-feedback no';
+            }
+        });
+        
+        solveBtn.addEventListener('click', () => {
+            if (isTranslatorTransitioning) return;
+            const task = storyTasks[currentStoryTaskIndex];
+            
+            const userInput = solutionInput.value;
+            const matches = userInput.match(/-?\d+/); 
+            
+            if (matches && parseInt(matches[0]) === task.solution) {
+                isTranslatorTransitioning = true;
+                solutionFeedbackEl.textContent = '🎉 Perfekt! Die Lösung ist richtig.';
+                solutionFeedbackEl.className = 'translator-feedback ok';
+                
+                setTimeout(() => {
+                    currentStoryTaskIndex++;
+                    if (currentStoryTaskIndex < storyTasks.length) {
+                        solutionFeedbackEl.textContent = 'Nächste Aufgabe wird geladen...';
+                        setTimeout(initTranslatorTask, 1500);
+                    } else {
+                        solutionFeedbackEl.innerHTML = '<b> Spitze! Du hast alle Textaufgaben gelöst!</b>';
+                    }
+                }, 1000);
+
+            } else {
+                solutionFeedbackEl.textContent = 'Das ist noch nicht die richtige Lösung für x.';
+                solutionFeedbackEl.className = 'translator-feedback no';
+            }
+        });
+        
+        initTranslatorTask();
+    }
+});
+</script>
+</body>
+</html>
